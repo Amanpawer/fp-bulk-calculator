@@ -1,67 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>FP Admin Panel</title>
 
-  <style>
+  <link rel="stylesheet" href="style.css">
 
-    body{
-      font-family:Arial;
-      background:#121212;
-      color:white;
-      padding:20px;
-      text-align:center;
-    }
-
-    .box{
-      background:#1e1e1e;
-      padding:20px;
-      border-radius:15px;
-      margin-top:20px;
-    }
-
-    input{
-      width:90%;
-      padding:12px;
-      margin:10px;
-      border:none;
-      border-radius:8px;
-      font-size:16px;
-    }
-
-    button{
-      width:90%;
-      padding:15px;
-      margin:10px;
-      border:none;
-      border-radius:10px;
-      background:#00b894;
-      color:white;
-      font-size:18px;
-    }
-
-    table{
-      width:100%;
-      margin-top:20px;
-      border-collapse:collapse;
-    }
-
-    table,th,td{
-      border:1px solid #555;
-    }
-
-    th,td{
-      padding:10px;
-    }
-
-  </style>
 </head>
 
 <body>
 
 <h1>FP Admin Panel</h1>
-
-<!-- LOGIN -->
 
 <div class="box" id="loginBox">
 
@@ -73,19 +22,15 @@
 
 </div>
 
-<!-- ADMIN PANEL -->
-
 <div class="box" id="adminPanel" style="display:none;">
 
-  <h2>Add New SKU</h2>
+  <h2>Add SKU</h2>
 
-  <input type="text" id="skuName" placeholder="SKU Name Example: 5kg (20)">
+  <input type="text" id="skuName" placeholder="SKU Name">
 
-  <input type="number" id="skuValue" placeholder="KG/Hour Value">
+  <input type="number" id="skuValue" placeholder="KG/Hour">
 
   <button onclick="addSKU()">Add SKU</button>
-
-  <h2>SKU List</h2>
 
   <table>
 
@@ -93,8 +38,9 @@
 
       <tr>
 
-        <th>SKU Name</th>
-        <th>KG/Hour</th>
+        <th>SKU</th>
+        <th>KG/Hr</th>
+        <th>Lines</th>
         <th>Delete</th>
 
       </tr>
@@ -107,138 +53,7 @@
 
 </div>
 
-<script>
-
-const adminPassword = "admin123";
-
-let skuData = JSON.parse(localStorage.getItem("skuData")) || [
-
-  {name:"0.05kg (55)",value:165},
-  {name:"0.05kg (100)",value:300},
-
-  {name:"0.5kg (130)",value:3900},
-
-  {name:"0.85kg (130)",value:6630},
-
-  {name:"1kg (40)",value:2400},
-  {name:"1kg (130)",value:7800},
-
-  {name:"2kg (31)",value:3720},
-
-  {name:"2.5kg (55)",value:8250},
-
-  {name:"3kg (25)",value:4500},
-
-  {name:"3.2kg (25)",value:4800},
-
-  {name:"4kg (21)",value:5040}
-
-];
-
-function login(){
-
-  let pass = document.getElementById("password").value;
-
-  if(pass == adminPassword){
-
-    document.getElementById("loginBox").style.display = "none";
-
-    document.getElementById("adminPanel").style.display = "block";
-
-    showSKU();
-
-  }
-
-  else{
-
-    alert("Wrong Password");
-
-  }
-
-}
-
-function addSKU(){
-
-  let name = document.getElementById("skuName").value;
-
-  let value = document.getElementById("skuValue").value;
-
-  if(name == "" || value == ""){
-
-    alert("Fill All Fields");
-
-    return;
-
-  }
-
-  skuData.push({
-
-    name:name,
-    value:value
-
-  });
-
-  saveData();
-
-  showSKU();
-
-  document.getElementById("skuName").value = "";
-
-  document.getElementById("skuValue").value = "";
-
-}
-
-function showSKU(){
-
-  let html = "";
-
-  skuData.forEach(function(item,index){
-
-    html += `
-
-      <tr>
-
-        <td>${item.name}</td>
-
-        <td>${item.value}</td>
-
-        <td>
-
-          <button onclick="deleteSKU(${index})">
-
-          Delete
-
-          </button>
-
-        </td>
-
-      </tr>
-
-    `;
-
-  });
-
-  document.getElementById("skuTable").innerHTML = html;
-
-}
-
-function deleteSKU(index){
-
-  skuData.splice(index,1);
-
-  saveData();
-
-  showSKU();
-
-}
-
-function saveData(){
-
-  localStorage.setItem("skuData",JSON.stringify(skuData));
-
-}
-
-</script>
+<script src="admin.js"></script>
 
 </body>
 </html>
