@@ -157,3 +157,74 @@ function saveData(){
   localStorage.setItem("skuData",JSON.stringify(skuData));
 
 }
+function manageLineSKU(index){
+
+  let sku = skuData[index];
+
+  let currentLines = [];
+
+  for(let line in lineSkuMap){
+
+    lineSkuMap[line].forEach(function(item){
+
+      if(item.name == sku.name){
+
+        currentLines.push(line);
+
+      }
+
+    });
+
+  }
+
+  let html = "Select Allowed Lines:\n\n";
+
+  allLines.forEach(function(line){
+
+    let checked = currentLines.includes(line) ? "✅" : "❌";
+
+    html += checked + " " + line + "\n";
+
+  });
+
+  let selected = prompt(
+    html + "\n\nType lines separated by comma\nExample:\nPouch01,Pouch02"
+  );
+
+  if(selected == null){
+    return;
+  }
+
+  // Remove old mapping
+
+  for(let line in lineSkuMap){
+
+    lineSkuMap[line] = lineSkuMap[line].filter(function(item){
+
+      return item.name != sku.name;
+
+    });
+
+  }
+
+  // Add new mapping
+
+  let lineArray = selected.split(",");
+
+  lineArray.forEach(function(line){
+
+    line = line.trim();
+
+    if(!lineSkuMap[line]){
+      lineSkuMap[line] = [];
+    }
+
+    lineSkuMap[line].push(sku);
+
+  });
+
+  localStorage.setItem("lineSkuMap",JSON.stringify(lineSkuMap));
+
+  alert("Line Mapping Updated");
+
+}
