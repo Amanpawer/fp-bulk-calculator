@@ -1,49 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>FP Admin Panel</title>
+  <title>FP Bulk Calculator Pro</title>
 
   <style>
 
     body{
-      font-family:Arial;
+      font-family: Arial;
       background:#121212;
       color:white;
       padding:20px;
       text-align:center;
+      margin:0;
+    }
+
+    h1,h2,h3{
+      color:#00ff99;
     }
 
     .box{
       background:#1e1e1e;
       padding:20px;
-      border-radius:15px;
       margin-top:20px;
-    }
-
-    input{
-      width:90%;
-      padding:12px;
-      margin:10px;
-      border:none;
-      border-radius:8px;
-      font-size:16px;
+      border-radius:15px;
+      box-shadow:0 0 10px rgba(0,0,0,0.5);
     }
 
     button{
       width:90%;
       padding:15px;
       margin:10px;
+      font-size:18px;
       border:none;
       border-radius:10px;
       background:#00b894;
       color:white;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#019875;
+    }
+
+    select,input{
+      width:90%;
+      padding:12px;
+      margin:10px;
+      font-size:16px;
+      border-radius:8px;
+      border:none;
+    }
+
+    label{
+      display:block;
+      margin:10px;
+      font-size:18px;
+    }
+
+    #result{
+      text-align:left;
+      padding:10px;
+      line-height:1.8;
       font-size:18px;
     }
 
     table{
       width:100%;
-      margin-top:20px;
       border-collapse:collapse;
+      margin-top:20px;
     }
 
     table,th,td{
@@ -59,33 +83,105 @@
 
 <body>
 
-<h1>FP Admin Panel</h1>
+<h1>FP Bulk Calculator Pro</h1>
 
 <!-- LOGIN -->
 
 <div class="box" id="loginBox">
 
-  <h2>Admin Login</h2>
+  <h2>Login</h2>
 
-  <input type="password" id="password" placeholder="Enter Password">
+  <input type="text" id="operatorName" placeholder="Enter Operator Name">
 
   <button onclick="login()">Login</button>
 
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- STEP 1 -->
 
-<div class="box" id="adminPanel" style="display:none;">
+<div class="box" id="step1" style="display:none;">
 
-  <h2>Add New SKU</h2>
+  <h2>Select Tank</h2>
 
-  <input type="text" id="skuName" placeholder="SKU Name Example: 5kg (20)">
+  <select id="tank">
 
-  <input type="number" id="skuValue" placeholder="KG/Hour Value">
+    <option value="">Select Tank</option>
 
-  <button onclick="addSKU()">Add SKU</button>
+    <option value="fp01">FP01</option>
 
-  <h2>SKU List</h2>
+    <option value="fp02">FP02 / Ronchi</option>
+
+    <option value="fp03">FP03</option>
+
+  </select>
+
+  <button onclick="goToLines()">Next</button>
+
+</div>
+
+<!-- STEP 2 -->
+
+<div class="box" id="step2" style="display:none;">
+
+  <h2>Select Running Lines</h2>
+
+  <div id="lineContainer"></div>
+
+  <button onclick="backTo1()">Back</button>
+
+  <button onclick="goToSKU()">Next</button>
+
+</div>
+
+<!-- STEP 3 -->
+
+<div class="box" id="step3" style="display:none;">
+
+  <h2>Select SKU</h2>
+
+  <div id="skuContainer"></div>
+
+  <button onclick="backTo2()">Back</button>
+
+  <button onclick="goToHours()">Next</button>
+
+</div>
+
+<!-- STEP 4 -->
+
+<div class="box" id="step4" style="display:none;">
+
+  <h2>Running Hours</h2>
+
+  <input type="number" id="hours" placeholder="Enter Hours">
+
+  <button onclick="backTo3()">Back</button>
+
+  <button onclick="calculateBulk()">Calculate</button>
+
+</div>
+
+<!-- RESULT -->
+
+<div class="box" id="step5" style="display:none;">
+
+  <h2>Production Result</h2>
+
+  <div id="result"></div>
+
+  <button onclick="downloadPDF()">Download PDF</button>
+
+  <button onclick="downloadExcel()">Download Excel</button>
+
+  <button onclick="resetAll()">Reset</button>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="box">
+
+  <h2>Production History</h2>
 
   <table>
 
@@ -93,15 +189,16 @@
 
       <tr>
 
-        <th>SKU Name</th>
-        <th>KG/Hour</th>
-        <th>Delete</th>
+        <th>Operator</th>
+        <th>Tank</th>
+        <th>Hours</th>
+        <th>Total MT</th>
 
       </tr>
 
     </thead>
 
-    <tbody id="skuTable"></tbody>
+    <tbody id="historyTable"></tbody>
 
   </table>
 
@@ -109,132 +206,283 @@
 
 <script>
 
-const adminPassword = "admin123";
+const lineData = {
 
-let skuData = JSON.parse(localStorage.getItem("skuData")) || [
+  fp01:["Pouch01","Pouch02","Pouch03"],
 
-  {name:"0.05kg (55)",value:165},
-  {name:"0.05kg (100)",value:300},
+  fp02:["Ronchi Filler","Sachet01","Sachet02","Sachet03"],
 
-  {name:"0.5kg (130)",value:3900},
+  fp03:["Pouch04","Pouch05","Pouch06"]
 
-  {name:"0.85kg (130)",value:6630},
+};
 
-  {name:"1kg (40)",value:2400},
-  {name:"1kg (130)",value:7800},
+const skuOptions = `
 
-  {name:"2kg (31)",value:3720},
+<option value="0">Select SKU</option>
 
-  {name:"2.5kg (55)",value:8250},
+<option value="165">0.05kg (55)</option>
+<option value="300">0.05kg (100)</option>
 
-  {name:"3kg (25)",value:4500},
+<option value="3900">0.5kg (130)</option>
 
-  {name:"3.2kg (25)",value:4800},
+<option value="6630">0.85kg (130)</option>
 
-  {name:"4kg (21)",value:5040}
+<option value="2400">1kg (40)</option>
 
-];
+<option value="7800">1kg (130)</option>
+
+<option value="3720">2kg (31)</option>
+
+<option value="8250">2.5kg (55)</option>
+
+<option value="4500">3kg (25)</option>
+
+<option value="4800">3.2kg (25)</option>
+
+<option value="5040">4kg (21)</option>
+
+`;
+
+let selectedLines = [];
+
+let operator = "";
+
+let finalResultText = "";
 
 function login(){
 
-  let pass = document.getElementById("password").value;
+  operator = document.getElementById("operatorName").value;
 
-  if(pass == adminPassword){
-
-    document.getElementById("loginBox").style.display = "none";
-
-    document.getElementById("adminPanel").style.display = "block";
-
-    showSKU();
-
-  }
-
-  else{
-
-    alert("Wrong Password");
-
-  }
-
-}
-
-function addSKU(){
-
-  let name = document.getElementById("skuName").value;
-
-  let value = document.getElementById("skuValue").value;
-
-  if(name == "" || value == ""){
-
-    alert("Fill All Fields");
-
+  if(operator == ""){
+    alert("Enter Operator Name");
     return;
-
   }
 
-  skuData.push({
+  document.getElementById("loginBox").style.display = "none";
 
-    name:name,
-    value:value
-
-  });
-
-  saveData();
-
-  showSKU();
-
-  document.getElementById("skuName").value = "";
-
-  document.getElementById("skuValue").value = "";
+  document.getElementById("step1").style.display = "block";
 
 }
 
-function showSKU(){
+function goToLines(){
+
+  let tank = document.getElementById("tank").value;
+
+  if(tank == ""){
+    alert("Select Tank");
+    return;
+  }
+
+  document.getElementById("step2").style.display = "block";
+
+  let lines = lineData[tank];
 
   let html = "";
 
-  skuData.forEach(function(item,index){
+  lines.forEach(function(line){
 
     html += `
-
-      <tr>
-
-        <td>${item.name}</td>
-
-        <td>${item.value}</td>
-
-        <td>
-
-          <button onclick="deleteSKU(${index})">
-
-          Delete
-
-          </button>
-
-        </td>
-
-      </tr>
-
+      <label>
+      <input type="checkbox" value="${line}">
+      ${line}
+      </label>
     `;
 
   });
 
-  document.getElementById("skuTable").innerHTML = html;
+  document.getElementById("lineContainer").innerHTML = html;
 
 }
 
-function deleteSKU(index){
+function goToSKU(){
 
-  skuData.splice(index,1);
+  selectedLines = [];
 
-  saveData();
+  let checkboxes = document.querySelectorAll("#lineContainer input[type='checkbox']:checked");
 
-  showSKU();
+  if(checkboxes.length == 0){
+    alert("Select At Least One Line");
+    return;
+  }
+
+  checkboxes.forEach(function(cb){
+
+    selectedLines.push(cb.value);
+
+  });
+
+  document.getElementById("step3").style.display = "block";
+
+  let html = "";
+
+  selectedLines.forEach(function(line){
+
+    html += `
+      <label>${line}</label>
+
+      <select class="skuSelect">
+
+      ${skuOptions}
+
+      </select>
+    `;
+
+  });
+
+  document.getElementById("skuContainer").innerHTML = html;
 
 }
 
-function saveData(){
+function goToHours(){
 
-  localStorage.setItem("skuData",JSON.stringify(skuData));
+  let allSku = document.querySelectorAll(".skuSelect");
+
+  let valid = true;
+
+  allSku.forEach(function(drop){
+
+    if(drop.value == "0"){
+      valid = false;
+    }
+
+  });
+
+  if(!valid){
+    alert("Select SKU For All Lines");
+    return;
+  }
+
+  document.getElementById("step4").style.display = "block";
+
+}
+
+function calculateBulk(){
+
+  let hours = Number(document.getElementById("hours").value);
+
+  if(hours <= 0){
+    alert("Enter Valid Hours");
+    return;
+  }
+
+  let total = 0;
+
+  let summary = "";
+
+  let allSku = document.querySelectorAll(".skuSelect");
+
+  allSku.forEach(function(drop,index){
+
+    total += Number(drop.value);
+
+    let skuName = drop.options[drop.selectedIndex].text;
+
+    summary += `
+      ${selectedLines[index]} → ${skuName}<br>
+    `;
+
+  });
+
+  total = total * hours;
+
+  let mt = total / 1000;
+
+  mt = mt.toFixed(2);
+
+  let tank = document.getElementById("tank").value.toUpperCase();
+
+  finalResultText = `
+
+    Operator : ${operator}<br><br>
+
+    Tank : ${tank}<br><br>
+
+    ${summary}<br>
+
+    Running Hours : ${hours}<br><br>
+
+    Total Bulk :
+    ${total.toLocaleString()} KG<br><br>
+
+    Total Bulk :
+    ${mt} MT
+
+  `;
+
+  document.getElementById("step5").style.display = "block";
+
+  document.getElementById("result").innerHTML = finalResultText;
+
+  addHistory(operator,tank,hours,mt);
+
+}
+
+function addHistory(operator,tank,hours,mt){
+
+  let row = `
+    <tr>
+      <td>${operator}</td>
+      <td>${tank}</td>
+      <td>${hours}</td>
+      <td>${mt}</td>
+    </tr>
+  `;
+
+  document.getElementById("historyTable").innerHTML += row;
+
+}
+
+function resetAll(){
+
+  location.reload();
+
+}
+
+function backTo1(){
+
+  document.getElementById("step2").style.display = "none";
+
+}
+
+function backTo2(){
+
+  document.getElementById("step3").style.display = "none";
+
+}
+
+function backTo3(){
+
+  document.getElementById("step4").style.display = "none";
+
+}
+
+function downloadPDF(){
+
+  let content = document.getElementById("result").innerText;
+
+  let win = window.open();
+
+  win.document.write("<h1>FP Bulk Report</h1>");
+
+  win.document.write("<p>"+content+"</p>");
+
+  win.print();
+
+}
+
+function downloadExcel(){
+
+  let table = document.querySelector("table").outerHTML;
+
+  let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(table);
+
+  let link = document.createElement("a");
+
+  link.href = url;
+
+  link.download = "production_history.xls";
+
+  link.click();
 
 }
 
