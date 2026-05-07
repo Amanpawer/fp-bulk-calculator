@@ -26,8 +26,18 @@
       color:white;
     }
 
-    button:hover{
-      background:#0056b3;
+    .section{
+      display:none;
+      background:white;
+      padding:20px;
+      margin-top:20px;
+      border-radius:10px;
+    }
+
+    label{
+      display:block;
+      margin:10px;
+      font-size:18px;
     }
   </style>
 </head>
@@ -36,9 +46,62 @@
 
 <h1>FP Bulk Calculator</h1>
 
-<button>FP01</button>
-<button>FP02 / Ronchi</button>
-<button>FP03</button>
+<button onclick="showFP01()">FP01</button>
+<button onclick="showFP02()">FP02 / Ronchi</button>
+<button onclick="showFP03()">FP03</button>
+
+<!-- FP01 -->
+<div class="section" id="fp01">
+  <h2>FP01 Lines</h2>
+
+  <label><input type="checkbox"> Pouch01</label>
+  <label><input type="checkbox"> Pouch02</label>
+  <label><input type="checkbox"> Pouch03</label>
+</div>
+
+<!-- FP02 -->
+<div class="section" id="fp02">
+  <h2>FP02 / Ronchi Lines</h2>
+
+  <label><input type="checkbox"> Ronchi Filler</label>
+  <label><input type="checkbox"> Sachet01</label>
+  <label><input type="checkbox"> Sachet02</label>
+  <label><input type="checkbox"> Sachet03</label>
+</div>
+
+<!-- FP03 -->
+<div class="section" id="fp03">
+  <h2>FP03 Lines</h2>
+
+  <label><input type="checkbox"> Pouch04</label>
+  <label><input type="checkbox"> Pouch05</label>
+  <label><input type="checkbox"> Pouch06</label>
+</div>
+
+<script>
+
+function hideAll(){
+  document.getElementById("fp01").style.display = "none";
+  document.getElementById("fp02").style.display = "none";
+  document.getElementById("fp03").style.display = "none";
+}
+
+function showFP01(){
+  hideAll();
+  document.getElementById("fp01").style.display = "block";
+}
+
+function showFP02(){
+  hideAll();
+  document.getElementById("fp02").style.display = "block";
+}
+
+function showFP03(){
+  hideAll();
+  document.getElementById("fp03").style.display = "block";
+}
+
+</script>
 
 </body>
 </html>
