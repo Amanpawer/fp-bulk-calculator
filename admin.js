@@ -1,4 +1,4 @@
-const adminPassword = "aman123";
+const adminPassword = "admin123";
 
 let skuData = JSON.parse(localStorage.getItem("skuData")) || [
 
@@ -110,6 +110,22 @@ function showSKU(){
 
         <p>KG/Hour : ${item.value}</p>
 
+        <details>
+
+          <summary
+            style="
+              background:#00b894;
+              padding:10px;
+              border-radius:8px;
+              cursor:pointer;
+              margin-bottom:10px;
+            "
+          >
+
+            Select Lines
+
+          </summary>
+
     `;
 
     allLines.forEach(function(line){
@@ -128,7 +144,13 @@ function showSKU(){
 
       html += `
 
-        <label>
+        <label
+          style="
+            display:block;
+            margin:10px;
+            text-align:left;
+          "
+        >
 
           <input
             type="checkbox"
@@ -145,6 +167,8 @@ function showSKU(){
     });
 
     html += `
+
+        </details>
 
         <button onclick="deleteSKU(${index})">
 
@@ -232,92 +256,18 @@ function deleteSKU(index){
 
   );
 
-  function showSKU(){
-
-  let html = "";
-
-  skuData.forEach(function(item,index){
-
-    html += `
-
-      <div class="box">
-
-        <h3>${item.name}</h3>
-
-        <p>KG/Hour : ${item.value}</p>
-
-        <details>
-
-          <summary
-            style="
-              background:#00b894;
-              padding:10px;
-              border-radius:8px;
-              cursor:pointer;
-              margin-bottom:10px;
-            "
-          >
-
-            Select Lines
-
-          </summary>
-
-    `;
-
-    allLines.forEach(function(line){
-
-      let checked = false;
-
-      if(lineSkuMap[line]){
-
-        checked = lineSkuMap[line].some(function(sku){
-
-          return sku.name == item.name;
-
-        });
-
-      }
-
-      html += `
-
-        <label
-          style="
-            display:block;
-            margin:10px;
-            text-align:left;
-          "
-        >
-
-          <input
-            type="checkbox"
-            ${checked ? "checked" : ""}
-            onchange="toggleLineSKU('${line}',${index},this)"
-          >
-
-          ${line}
-
-        </label>
-
-      `;
-
-    });
-
-    html += `
-
-        </details>
-
-        <button onclick="deleteSKU(${index})">
-
-        Delete SKU
-
-        </button>
-
-      </div>
-
-    `;
-
-  });
-
-  document.getElementById("skuTable").innerHTML = html;
+  showSKU();
 
 }
+
+function saveData(){
+
+  localStorage.setItem(
+
+    "skuData",
+
+    JSON.stringify(skuData)
+
+  );
+
+}          
