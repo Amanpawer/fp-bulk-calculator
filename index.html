@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>FP Bulk Calculator Pro</title>
+  <title>FP Bulk Calculator</title>
 
   <style>
 
     body{
       font-family: Arial;
-      background:#121212;
-      color:white;
+      background:#f2f2f2;
       padding:20px;
       text-align:center;
-      margin:0;
     }
 
-    h1,h2,h3{
-      color:#00ff99;
+    h1{
+      color:#333;
     }
 
     .box{
-      background:#1e1e1e;
+      background:white;
       padding:20px;
       margin-top:20px;
-      border-radius:15px;
-      box-shadow:0 0 10px rgba(0,0,0,0.5);
+      border-radius:12px;
     }
 
     button{
@@ -33,13 +30,8 @@
       font-size:18px;
       border:none;
       border-radius:10px;
-      background:#00b894;
+      background:#007bff;
       color:white;
-      cursor:pointer;
-    }
-
-    button:hover{
-      background:#019875;
     }
 
     select,input{
@@ -48,7 +40,6 @@
       margin:10px;
       font-size:16px;
       border-radius:8px;
-      border:none;
     }
 
     label{
@@ -58,24 +49,10 @@
     }
 
     #result{
-      text-align:left;
-      padding:10px;
-      line-height:1.8;
-      font-size:18px;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
+      font-size:24px;
+      color:green;
+      font-weight:bold;
       margin-top:20px;
-    }
-
-    table,th,td{
-      border:1px solid #555;
-    }
-
-    th,td{
-      padding:10px;
     }
 
   </style>
@@ -83,34 +60,19 @@
 
 <body>
 
-<h1>FP Bulk Calculator Pro</h1>
-
-<!-- LOGIN -->
-
-<div class="box" id="loginBox">
-
-  <h2>Login</h2>
-
-  <input type="text" id="operatorName" placeholder="Enter Operator Name">
-
-  <button onclick="login()">Login</button>
-
-</div>
+<h1>FP Bulk Calculator</h1>
 
 <!-- STEP 1 -->
 
-<div class="box" id="step1" style="display:none;">
+<div class="box" id="step1">
 
   <h2>Select Tank</h2>
 
   <select id="tank">
 
     <option value="">Select Tank</option>
-
     <option value="fp01">FP01</option>
-
     <option value="fp02">FP02 / Ronchi</option>
-
     <option value="fp03">FP03</option>
 
   </select>
@@ -127,8 +89,6 @@
 
   <div id="lineContainer"></div>
 
-  <button onclick="backTo1()">Back</button>
-
   <button onclick="goToSKU()">Next</button>
 
 </div>
@@ -141,8 +101,6 @@
 
   <div id="skuContainer"></div>
 
-  <button onclick="backTo2()">Back</button>
-
   <button onclick="goToHours()">Next</button>
 
 </div>
@@ -151,11 +109,9 @@
 
 <div class="box" id="step4" style="display:none;">
 
-  <h2>Running Hours</h2>
+  <h2>Enter Running Hours</h2>
 
   <input type="number" id="hours" placeholder="Enter Hours">
-
-  <button onclick="backTo3()">Back</button>
 
   <button onclick="calculateBulk()">Calculate</button>
 
@@ -165,42 +121,9 @@
 
 <div class="box" id="step5" style="display:none;">
 
-  <h2>Production Result</h2>
+  <h2>Result</h2>
 
   <div id="result"></div>
-
-  <button onclick="downloadPDF()">Download PDF</button>
-
-  <button onclick="downloadExcel()">Download Excel</button>
-
-  <button onclick="resetAll()">Reset</button>
-
-</div>
-
-<!-- HISTORY -->
-
-<div class="box">
-
-  <h2>Production History</h2>
-
-  <table>
-
-    <thead>
-
-      <tr>
-
-        <th>Operator</th>
-        <th>Tank</th>
-        <th>Hours</th>
-        <th>Total MT</th>
-
-      </tr>
-
-    </thead>
-
-    <tbody id="historyTable"></tbody>
-
-  </table>
 
 </div>
 
@@ -208,11 +131,11 @@
 
 const lineData = {
 
-  fp01:["Pouch01","Pouch02","Pouch03"],
+  fp01: ["Pouch01","Pouch02","Pouch03"],
 
-  fp02:["Ronchi Filler","Sachet01","Sachet02","Sachet03"],
+  fp02: ["Ronchi Filler","Sachet01","Sachet02","Sachet03"],
 
-  fp03:["Pouch04","Pouch05","Pouch06"]
+  fp03: ["Pouch04","Pouch05","Pouch06"]
 
 };
 
@@ -244,25 +167,6 @@ const skuOptions = `
 `;
 
 let selectedLines = [];
-
-let operator = "";
-
-let finalResultText = "";
-
-function login(){
-
-  operator = document.getElementById("operatorName").value;
-
-  if(operator == ""){
-    alert("Enter Operator Name");
-    return;
-  }
-
-  document.getElementById("loginBox").style.display = "none";
-
-  document.getElementById("step1").style.display = "block";
-
-}
 
 function goToLines(){
 
@@ -315,7 +219,7 @@ function goToSKU(){
 
   let html = "";
 
-  selectedLines.forEach(function(line){
+  selectedLines.forEach(function(line,index){
 
     html += `
       <label>${line}</label>
@@ -367,19 +271,11 @@ function calculateBulk(){
 
   let total = 0;
 
-  let summary = "";
-
   let allSku = document.querySelectorAll(".skuSelect");
 
-  allSku.forEach(function(drop,index){
+  allSku.forEach(function(drop){
 
     total += Number(drop.value);
-
-    let skuName = drop.options[drop.selectedIndex].text;
-
-    summary += `
-      ${selectedLines[index]} → ${skuName}<br>
-    `;
 
   });
 
@@ -387,102 +283,17 @@ function calculateBulk(){
 
   let mt = total / 1000;
 
-  mt = mt.toFixed(2);
-
-  let tank = document.getElementById("tank").value.toUpperCase();
-
-  finalResultText = `
-
-    Operator : ${operator}<br><br>
-
-    Tank : ${tank}<br><br>
-
-    ${summary}<br>
-
-    Running Hours : ${hours}<br><br>
-
-    Total Bulk :
-    ${total.toLocaleString()} KG<br><br>
-
-    Total Bulk :
-    ${mt} MT
-
-  `;
-
   document.getElementById("step5").style.display = "block";
 
-  document.getElementById("result").innerHTML = finalResultText;
+  document.getElementById("result").innerHTML =
 
-  addHistory(operator,tank,hours,mt);
+  "Total Bulk = " +
+  total.toLocaleString() +
+  " KG <br><br>" +
 
-}
-
-function addHistory(operator,tank,hours,mt){
-
-  let row = `
-    <tr>
-      <td>${operator}</td>
-      <td>${tank}</td>
-      <td>${hours}</td>
-      <td>${mt}</td>
-    </tr>
-  `;
-
-  document.getElementById("historyTable").innerHTML += row;
-
-}
-
-function resetAll(){
-
-  location.reload();
-
-}
-
-function backTo1(){
-
-  document.getElementById("step2").style.display = "none";
-
-}
-
-function backTo2(){
-
-  document.getElementById("step3").style.display = "none";
-
-}
-
-function backTo3(){
-
-  document.getElementById("step4").style.display = "none";
-
-}
-
-function downloadPDF(){
-
-  let content = document.getElementById("result").innerText;
-
-  let win = window.open();
-
-  win.document.write("<h1>FP Bulk Report</h1>");
-
-  win.document.write("<p>"+content+"</p>");
-
-  win.print();
-
-}
-
-function downloadExcel(){
-
-  let table = document.querySelector("table").outerHTML;
-
-  let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(table);
-
-  let link = document.createElement("a");
-
-  link.href = url;
-
-  link.download = "production_history.xls";
-
-  link.click();
+  "Total Bulk = " +
+  mt.toFixed(2) +
+  " MT";
 
 }
 
