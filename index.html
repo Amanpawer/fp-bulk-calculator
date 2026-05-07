@@ -16,11 +16,11 @@
       color:#333;
     }
 
-    .section{
+    .box{
       background:white;
       padding:20px;
       margin-top:20px;
-      border-radius:10px;
+      border-radius:12px;
     }
 
     button{
@@ -36,7 +36,7 @@
 
     select,input{
       width:90%;
-      padding:10px;
+      padding:12px;
       margin:10px;
       font-size:16px;
       border-radius:8px;
@@ -44,18 +44,14 @@
 
     label{
       display:block;
-      margin-top:15px;
+      margin:10px;
       font-size:18px;
-    }
-
-    .skuBox{
-      margin-bottom:20px;
     }
 
     #result{
       font-size:24px;
-      font-weight:bold;
       color:green;
+      font-weight:bold;
       margin-top:20px;
     }
 
@@ -66,180 +62,66 @@
 
 <h1>FP Bulk Calculator</h1>
 
-<div class="section">
+<!-- STEP 1 -->
+
+<div class="box" id="step1">
 
   <h2>Select Tank</h2>
 
-  <select id="tankSelect" onchange="showLines()">
+  <select id="tank">
+
     <option value="">Select Tank</option>
     <option value="fp01">FP01</option>
     <option value="fp02">FP02 / Ronchi</option>
     <option value="fp03">FP03</option>
+
   </select>
 
-</div>
-
-<!-- FP01 -->
-<div class="section" id="fp01" style="display:none;">
-
-  <h2>FP01 Lines</h2>
-
-  <div class="skuBox">
-    <label>Pouch01</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
-
-  <div class="skuBox">
-    <label>Pouch02</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
-
-  <div class="skuBox">
-    <label>Pouch03</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
+  <button onclick="goToLines()">Next</button>
 
 </div>
 
-<!-- FP02 -->
-<div class="section" id="fp02" style="display:none;">
+<!-- STEP 2 -->
 
-  <h2>FP02 / Ronchi</h2>
+<div class="box" id="step2" style="display:none;">
 
-  <div class="skuBox">
-    <label>Ronchi Filler</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="165">0.05kg (55)</option>
-      <option value="300">0.05kg (100)</option>
-    </select>
-  </div>
+  <h2>Select Running Lines</h2>
 
-  <div class="skuBox">
-    <label>Sachet01</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="165">0.05kg (55)</option>
-      <option value="300">0.05kg (100)</option>
-    </select>
-  </div>
+  <div id="lineContainer"></div>
 
-  <div class="skuBox">
-    <label>Sachet02</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="165">0.05kg (55)</option>
-      <option value="300">0.05kg (100)</option>
-    </select>
-  </div>
-
-  <div class="skuBox">
-    <label>Sachet03</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="165">0.05kg (55)</option>
-      <option value="300">0.05kg (100)</option>
-    </select>
-  </div>
+  <button onclick="goToSKU()">Next</button>
 
 </div>
 
-<!-- FP03 -->
-<div class="section" id="fp03" style="display:none;">
+<!-- STEP 3 -->
 
-  <h2>FP03 Lines</h2>
+<div class="box" id="step3" style="display:none;">
 
-  <div class="skuBox">
-    <label>Pouch04</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
+  <h2>Select SKU</h2>
 
-  <div class="skuBox">
-    <label>Pouch05</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
+  <div id="skuContainer"></div>
 
-  <div class="skuBox">
-    <label>Pouch06</label>
-    <select class="sku">
-      <option value="0">Select SKU</option>
-      <option value="3900">0.5kg (130)</option>
-      <option value="6630">0.85kg (130)</option>
-      <option value="2400">1kg (40)</option>
-      <option value="7800">1kg (130)</option>
-      <option value="3720">2kg (31)</option>
-      <option value="8250">2.5kg (55)</option>
-      <option value="4500">3kg (25)</option>
-      <option value="4800">3.2kg (25)</option>
-      <option value="5040">4kg (21)</option>
-    </select>
-  </div>
+  <button onclick="goToHours()">Next</button>
 
 </div>
 
-<!-- Hours -->
-<div class="section">
+<!-- STEP 4 -->
 
-  <h2>Running Hours</h2>
+<div class="box" id="step4" style="display:none;">
+
+  <h2>Enter Running Hours</h2>
 
   <input type="number" id="hours" placeholder="Enter Hours">
 
-  <button onclick="calculateBulk()">Calculate Bulk</button>
+  <button onclick="calculateBulk()">Calculate</button>
+
+</div>
+
+<!-- RESULT -->
+
+<div class="box" id="step5" style="display:none;">
+
+  <h2>Result</h2>
 
   <div id="result"></div>
 
@@ -247,17 +129,134 @@
 
 <script>
 
-function showLines(){
+const lineData = {
 
-  document.getElementById("fp01").style.display = "none";
-  document.getElementById("fp02").style.display = "none";
-  document.getElementById("fp03").style.display = "none";
+  fp01: ["Pouch01","Pouch02","Pouch03"],
 
-  let tank = document.getElementById("tankSelect").value;
+  fp02: ["Ronchi Filler","Sachet01","Sachet02","Sachet03"],
 
-  if(tank){
-    document.getElementById(tank).style.display = "block";
+  fp03: ["Pouch04","Pouch05","Pouch06"]
+
+};
+
+const skuOptions = `
+
+<option value="0">Select SKU</option>
+
+<option value="165">0.05kg (55)</option>
+<option value="300">0.05kg (100)</option>
+
+<option value="3900">0.5kg (130)</option>
+
+<option value="6630">0.85kg (130)</option>
+
+<option value="2400">1kg (40)</option>
+
+<option value="7800">1kg (130)</option>
+
+<option value="3720">2kg (31)</option>
+
+<option value="8250">2.5kg (55)</option>
+
+<option value="4500">3kg (25)</option>
+
+<option value="4800">3.2kg (25)</option>
+
+<option value="5040">4kg (21)</option>
+
+`;
+
+let selectedLines = [];
+
+function goToLines(){
+
+  let tank = document.getElementById("tank").value;
+
+  if(tank == ""){
+    alert("Select Tank");
+    return;
   }
+
+  document.getElementById("step2").style.display = "block";
+
+  let lines = lineData[tank];
+
+  let html = "";
+
+  lines.forEach(function(line){
+
+    html += `
+      <label>
+      <input type="checkbox" value="${line}">
+      ${line}
+      </label>
+    `;
+
+  });
+
+  document.getElementById("lineContainer").innerHTML = html;
+
+}
+
+function goToSKU(){
+
+  selectedLines = [];
+
+  let checkboxes = document.querySelectorAll("#lineContainer input[type='checkbox']:checked");
+
+  if(checkboxes.length == 0){
+    alert("Select At Least One Line");
+    return;
+  }
+
+  checkboxes.forEach(function(cb){
+
+    selectedLines.push(cb.value);
+
+  });
+
+  document.getElementById("step3").style.display = "block";
+
+  let html = "";
+
+  selectedLines.forEach(function(line,index){
+
+    html += `
+      <label>${line}</label>
+
+      <select class="skuSelect">
+
+      ${skuOptions}
+
+      </select>
+    `;
+
+  });
+
+  document.getElementById("skuContainer").innerHTML = html;
+
+}
+
+function goToHours(){
+
+  let allSku = document.querySelectorAll(".skuSelect");
+
+  let valid = true;
+
+  allSku.forEach(function(drop){
+
+    if(drop.value == "0"){
+      valid = false;
+    }
+
+  });
+
+  if(!valid){
+    alert("Select SKU For All Lines");
+    return;
+  }
+
+  document.getElementById("step4").style.display = "block";
 
 }
 
@@ -265,13 +264,18 @@ function calculateBulk(){
 
   let hours = Number(document.getElementById("hours").value);
 
+  if(hours <= 0){
+    alert("Enter Valid Hours");
+    return;
+  }
+
   let total = 0;
 
-  let allSku = document.querySelectorAll(".sku");
+  let allSku = document.querySelectorAll(".skuSelect");
 
-  allSku.forEach(function(dropdown){
+  allSku.forEach(function(drop){
 
-    total += Number(dropdown.value);
+    total += Number(drop.value);
 
   });
 
@@ -279,9 +283,17 @@ function calculateBulk(){
 
   let mt = total / 1000;
 
+  document.getElementById("step5").style.display = "block";
+
   document.getElementById("result").innerHTML =
-    "Total Bulk = " + total.toLocaleString() + " KG<br><br>" +
-    "Total Bulk = " + mt.toFixed(2) + " MT";
+
+  "Total Bulk = " +
+  total.toLocaleString() +
+  " KG <br><br>" +
+
+  "Total Bulk = " +
+  mt.toFixed(2) +
+  " MT";
 
 }
 
