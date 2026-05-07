@@ -1,6 +1,28 @@
-const adminPassword = "aman@2004";
+const adminPassword = "aman123";
 
-let skuData = JSON.parse(localStorage.getItem("skuData")) || [];
+let skuData = JSON.parse(localStorage.getItem("skuData")) || [
+
+  {name:"0.05kg (55)",value:165},
+  {name:"0.05kg (100)",value:300},
+
+  {name:"0.5kg (130)",value:3900},
+
+  {name:"0.85kg (130)",value:6630},
+
+  {name:"1kg (40)",value:2400},
+  {name:"1kg (130)",value:7800},
+
+  {name:"2kg (31)",value:3720},
+
+  {name:"2.5kg (55)",value:8250},
+
+  {name:"3kg (25)",value:4500},
+
+  {name:"3.2kg (25)",value:4800},
+
+  {name:"4kg (21)",value:5040}
+
+];
 
 let lineSkuMap = JSON.parse(localStorage.getItem("lineSkuMap")) || {};
 
@@ -50,18 +72,27 @@ function addSKU(){
   let value = document.getElementById("skuValue").value;
 
   if(name == "" || value == ""){
+
     alert("Fill All Fields");
+
     return;
+
   }
 
   skuData.push({
+
     name:name,
-    value:value
+    value:Number(value)
+
   });
 
   saveData();
 
   showSKU();
+
+  document.getElementById("skuName").value = "";
+
+  document.getElementById("skuValue").value = "";
 
 }
 
@@ -73,33 +104,55 @@ function showSKU(){
 
     html += `
 
-      <tr>
+      <div class="box">
 
-        <td>${item.name}</td>
+        <h3>${item.name}</h3>
 
-        <td>${item.value}</td>
+        <p>KG/Hour : ${item.value}</p>
 
-        <td>
+    `;
 
-          <button onclick="manageLineSKU(${index})">
+    allLines.forEach(function(line){
 
-          Manage Lines
+      let checked = false;
 
-          </button>
+      if(lineSkuMap[line]){
 
-        </td>
+        checked = lineSkuMap[line].some(function(sku){
 
-        <td>
+          return sku.name == item.name;
 
-          <button onclick="deleteSKU(${index})">
+        });
 
-          Delete
+      }
 
-          </button>
+      html += `
 
-        </td>
+        <label>
 
-      </tr>
+          <input
+            type="checkbox"
+            ${checked ? "checked" : ""}
+            onchange="toggleLineSKU('${line}',${index},this)"
+          >
+
+          ${line}
+
+        </label>
+
+      `;
+
+    });
+
+    html += `
+
+        <button onclick="deleteSKU(${index})">
+
+        Delete SKU
+
+        </button>
+
+      </div>
 
     `;
 
@@ -109,95 +162,31 @@ function showSKU(){
 
 }
 
-function deleteSKU(index){
-
-  skuData.splice(index,1);
-
-  saveData();
-
-  showSKU();
-
-}
-
-function manageLineSKU(index){
+function toggleLineSKU(line,index,checkbox){
 
   let sku = skuData[index];
 
-  let selected = prompt(
-    "Enter allowed lines separated by comma\n\nExample:\nPouch01,Pouch02",
-    ""
-  );
-
-  if(selected == null){
-    return;
+  if(!lineSkuMap[line]){
+    lineSkuMap[line] = [];
   }
 
-  let lineArray = selected.split(",");
+  if(checkbox.checked){
 
-  lineArray.forEach(function(line){
+    let alreadyExists = lineSkuMap[line].some(function(item){
 
-    line = line.trim();
-
-    if(!lineSkuMap[line]){
-      lineSkuMap[line] = [];
-    }
-
-    lineSkuMap[line].push(sku);
-
-  });
-
-  localStorage.setItem("lineSkuMap",JSON.stringify(lineSkuMap));
-
-  alert("Line Mapping Saved");
-
-}
-
-function saveData(){
-
-  localStorage.setItem("skuData",JSON.stringify(skuData));
-
-}
-function manageLineSKU(index){
-
-  let sku = skuData[index];
-
-  let currentLines = [];
-
-  for(let line in lineSkuMap){
-
-    lineSkuMap[line].forEach(function(item){
-
-      if(item.name == sku.name){
-
-        currentLines.push(line);
-
-      }
+      return item.name == sku.name;
 
     });
 
+    if(!alreadyExists){
+
+      lineSkuMap[line].push(sku);
+
+    }
+
   }
 
-  let html = "Select Allowed Lines:\n\n";
-
-  allLines.forEach(function(line){
-
-    let checked = currentLines.includes(line) ? "✅" : "❌";
-
-    html += checked + " " + line + "\n";
-
-  });
-
-  let selected = prompt(
-    html + "\n\nType lines separated by comma\nExample:\nPouch01,Pouch02"
-  );
-
-  if(selected == null){
-    return;
-  }
-
-  // Remove old mapping
-
-  for(let line in lineSkuMap){
+  else{
 
     lineSkuMap[line] = lineSkuMap[line].filter(function(item){
 
@@ -207,24 +196,54 @@ function manageLineSKU(index){
 
   }
 
-  // Add new mapping
+  localStorage.setItem(
 
-  let lineArray = selected.split(",");
+    "lineSkuMap",
 
-  lineArray.forEach(function(line){
+    JSON.stringify(lineSkuMap)
 
-    line = line.trim();
+  );
 
-    if(!lineSkuMap[line]){
-      lineSkuMap[line] = [];
-    }
+}
 
-    lineSkuMap[line].push(sku);
+function deleteSKU(index){
 
-  });
+  let skuName = skuData[index].name;
 
-  localStorage.setItem("lineSkuMap",JSON.stringify(lineSkuMap));
+  skuData.splice(index,1);
 
-  alert("Line Mapping Updated");
+  for(let line in lineSkuMap){
+
+    lineSkuMap[line] = lineSkuMap[line].filter(function(item){
+
+      return item.name != skuName;
+
+    });
+
+  }
+
+  saveData();
+
+  localStorage.setItem(
+
+    "lineSkuMap",
+
+    JSON.stringify(lineSkuMap)
+
+  );
+
+  showSKU();
+
+}
+
+function saveData(){
+
+  localStorage.setItem(
+
+    "skuData",
+
+    JSON.stringify(skuData)
+
+  );
 
 }
