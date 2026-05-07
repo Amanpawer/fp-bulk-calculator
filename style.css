@@ -26,6 +26,8 @@ input,select{
   border:none;
   border-radius:8px;
   font-size:16px;
+  background:#2c2c2c;
+  color:white;
 }
 
 button{
@@ -49,9 +51,16 @@ button:hover{
 }
 
 label{
-  display:block;
-  margin:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:10px 0;
   font-size:18px;
+}
+
+label input[type="checkbox"]{
+  width:20px;
+  height:20px;
 }
 
 #result{
@@ -72,4 +81,27 @@ table,th,td{
 
 th,td{
   padding:10px;
+}
+
+details{
+  margin-top:15px;
+  text-align:left;
+}
+
+summary{
+  background:#00b894;
+  padding:12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:bold;
+  list-style:none;
+}
+
+summary::-webkit-details-marker{
+  display:none;
+}
+
+p{
+  font-size:16px;
 }
