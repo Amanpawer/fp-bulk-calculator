@@ -232,18 +232,92 @@ function deleteSKU(index){
 
   );
 
-  showSKU();
+  function showSKU(){
 
-}
+  let html = "";
 
-function saveData(){
+  skuData.forEach(function(item,index){
 
-  localStorage.setItem(
+    html += `
 
-    "skuData",
+      <div class="box">
 
-    JSON.stringify(skuData)
+        <h3>${item.name}</h3>
 
-  );
+        <p>KG/Hour : ${item.value}</p>
+
+        <details>
+
+          <summary
+            style="
+              background:#00b894;
+              padding:10px;
+              border-radius:8px;
+              cursor:pointer;
+              margin-bottom:10px;
+            "
+          >
+
+            Select Lines
+
+          </summary>
+
+    `;
+
+    allLines.forEach(function(line){
+
+      let checked = false;
+
+      if(lineSkuMap[line]){
+
+        checked = lineSkuMap[line].some(function(sku){
+
+          return sku.name == item.name;
+
+        });
+
+      }
+
+      html += `
+
+        <label
+          style="
+            display:block;
+            margin:10px;
+            text-align:left;
+          "
+        >
+
+          <input
+            type="checkbox"
+            ${checked ? "checked" : ""}
+            onchange="toggleLineSKU('${line}',${index},this)"
+          >
+
+          ${line}
+
+        </label>
+
+      `;
+
+    });
+
+    html += `
+
+        </details>
+
+        <button onclick="deleteSKU(${index})">
+
+        Delete SKU
+
+        </button>
+
+      </div>
+
+    `;
+
+  });
+
+  document.getElementById("skuTable").innerHTML = html;
 
 }
